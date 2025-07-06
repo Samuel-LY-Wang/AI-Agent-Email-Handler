@@ -1,3 +1,4 @@
+#REMEMBER TO CHANGE ACCORDING TO YOUR CIRCUMSTANCES!
 RELATION = {
     "Joy Wang <xin.joy.wang@gmail.com>": "My mother",
     "Kebin Wang <kebinwang@gmail.com>": "My father",
