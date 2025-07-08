@@ -43,7 +43,7 @@ if emails:
                 input=f"Draft an email responding to the email '{subject}' from {sender}. The body of the email is: {body}"
             )
         #sends email with correct syntax
-        send_email(service=service, in_reply_to=sender, subject=f"Re: {subject}", body_text=response.output_text, thread_id=thd_id)
+        send_email(service=service, in_reply_to=sender, subject=f"Re: {subject}", body_text=response.output_text, thread_id=thd_id, message_id=msg_id)
         print("All emails sent successfully.")
 else:
     # this just means emails=None
