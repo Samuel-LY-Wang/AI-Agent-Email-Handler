@@ -9,14 +9,9 @@ You have to create a .env file, and enter your OpenAI API key as OPEN_API_KEY={y
 
 # CURRENT STATUS:
 
-MVP\
-Reading emails: DONE\
-Calling OpenAI to write responses: DONE\
-Sending emails to drafts: DONE\
-Filtering emails to only incude primary inbox: DONE\
+MVP: DONE\
 \
-\
-NEXT STEPS\
+NEXT STEPS:\
 Blacklist/whitelist: WORKING ON IT\
 Running on cloud: LATER\
 Multiple user support: SOON\
