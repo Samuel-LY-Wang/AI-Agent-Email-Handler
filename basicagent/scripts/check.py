@@ -6,6 +6,9 @@ from scripts.SCOPE import SCOPES
 from datetime import datetime
 
 def get_cur_time():
+    '''
+    gets the current date in YYYY/MM/DD format and returns a query string for Gmail API.\n
+    The query string is formatted as "after:YYYY/MM/DD" to filter emails received today'''
     today = datetime.today().strftime('%Y/%m/%d')
     query = f"after:{today}"
     return query

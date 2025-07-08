@@ -1,6 +1,10 @@
 import base64
 
 def extract_text_from_parts(parts):
+    '''
+    extracts text from the parts of a Gmail message payload.\n
+    Handles both plain text and HTML parts, skipping attachments.\n
+    Returns the combined text content as a string.'''
     message_body = ""
 
     for part in parts:
@@ -24,9 +28,13 @@ def extract_text_from_parts(parts):
     return message_body
 
 def decode_base64(data):
+    '''
+    decodes base64 string (URL safe) to utf-8 string'''
     return base64.urlsafe_b64decode(data).decode('utf-8', errors='replace')
 
 def get_message_body(msg):
+    '''
+    gets the body of a Gmail message given the raw message data'''
     payload = msg.get('payload', {})
 
     # Case 1: Body directly in payload

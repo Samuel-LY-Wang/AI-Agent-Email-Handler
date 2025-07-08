@@ -1,18 +1,25 @@
 from openai import OpenAI
 from dotenv import dotenv_values
 from relations import RELATION
-from scripts import *
-from scripts.authenticate import *
+from auth.authenticate import *
 from scripts.check import *
 from scripts.get_msg_body import *
 from scripts.send import *
 
+# initialize Gmail API client
+creds = Credentials.from_authorized_user_file('auth/token.json', SCOPES)
+service = build('gmail', 'v1', credentials=creds)
+authenticate_gmail()
+
+# initialize OpenAI API client
 env_vars=dotenv_values(".env")
 API_KEY=env_vars["OPEN_API_KEY"]
 client = OpenAI(api_key=API_KEY)
 
-authenticate_gmail()
+# check email
 emails=check_email()
+
+# draft replies and send them
 try:
     # each email is [message_id, thread_id, subject, sender, date, body]
     for email in emails:
@@ -40,13 +47,3 @@ except Exception as e:
     # something else went wrong
     print(f"An error occurred: {e}")
     exit(1)
-# print(emails)
-# for msg in emails:
-#     print(msg)
-
-# response = client.responses.create(
-#     model="gpt-4.1-mini",
-#     input="Write a one-sentence bedtime story about a unicorn."
-# )
-
-# print(response.output_text)

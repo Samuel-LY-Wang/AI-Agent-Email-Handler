@@ -1,10 +1,11 @@
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-
-# Scope needed for reading and writing drafts
-SCOPES = ['https://www.googleapis.com/auth/gmail.modify']
+from basicagent.scripts.SCOPE import SCOPES
 
 def authenticate_gmail():
+    '''
+    Opens a window asking user to log into their email\n
+    stores the authentication token in auth/token.json'''
     flow = InstalledAppFlow.from_client_secrets_file('basicagent/credentials.json', SCOPES)
     creds = flow.run_local_server(port=0)
     
@@ -13,5 +14,3 @@ def authenticate_gmail():
         token.write(creds.to_json())
 
     return build('gmail', 'v1', credentials=creds)
-
-authenticate_gmail()
