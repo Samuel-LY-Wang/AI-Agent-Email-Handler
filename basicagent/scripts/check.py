@@ -5,6 +5,30 @@ from scripts.get_msg_body import *
 from scripts.SCOPE import SCOPES
 from datetime import datetime
 
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from lists import *
+
+def accept_email(msg, mode=PREFERRED_MODE):
+    '''
+    Takes in an email and decides whether to accept or reject based on sender\n
+    Has 2 different modes:\n
+    Blacklist mode (default): accepts all emails except those from blacklisted senders\n
+    Whitelist mode: only accepts emails from whitelisted senders'''
+    if (mode=='blacklist'):
+        # if the sender is in the blacklist, return False
+        if msg[3] in BLACKLIST:
+            return False
+        # otherwise, return True
+        return True
+    elif (mode=='whitelist'):
+        # if the sender is in the whitelist, return True
+        if msg[3] in WHITELIST:
+            return True
+        # otherwise, return False
+        return False
+
 def get_cur_time():
     '''
     gets the current date in YYYY/MM/DD format and returns a query string for Gmail API.\n
@@ -41,8 +65,15 @@ def check_email():
             sender = next((h['value'] for h in headers if h['name'] == 'From'), "(No Sender)")
             date = next((h['value'] for h in headers if h['name'] == 'Date'), "(No Date)")
             body = get_message_body(msg_data)
-            emails.append([msg_id, thread_id, subject, sender, date, body])
+            email=[msg_id, thread_id, subject, sender, date, body]
+            #strips leading and trailing whitespace to make life easier.
+            for attribute in email:
+                attribute = attribute.strip() if isinstance(attribute, str) else attribute
+            #decide whether to reply based on the blacklist, whitelist, and preferred mode
+            if accept_email(email):
+                emails.append([msg_id, thread_id, subject, sender, date, body])
             # Debug print statements, ignore
+            # print(sender)
             # print("Subject:", subject)
             # print("Headers:", headers)
             # print("Message ID:", msg['id'])
