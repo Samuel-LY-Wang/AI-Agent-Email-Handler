@@ -12,7 +12,7 @@ You have to create a .env file, and enter your OpenAI API key as OPEN_API_KEY={y
 MVP: DONE\
 \
 NEXT STEPS:\
-Blacklist/whitelist: WORKING ON IT\
-Running on cloud: LATER\
+Blacklist/whitelist: DONE\
+Running on cloud: WORKING ON IT\
 Multiple user support: SOON\
 Other email providers: LATER
