@@ -25,7 +25,7 @@ client = OpenAI(api_key=API_KEY)
 emails=check_email()
 
 # draft replies and send them
-try:
+if emails:
     # each email is [message_id, thread_id, subject, sender, date, body]
     for email in emails:
         msg_id, thd_id, subject, sender, date, body = email
@@ -45,13 +45,7 @@ try:
         #sends email with correct syntax
         send_email(service=service, in_reply_to=sender, subject=f"Re: {subject}", body_text=response.output_text, thread_id=thd_id)
         print("All emails sent successfully.")
-except TypeError as t:
+else:
     # this just means emails=None
-    # this is fine, 
+    # this is fine
     print("No emails found.")
-    print(f"Error: {t}")
-    exit(0)
-except Exception as e:
-    # something else went wrong
-    print(f"An error occurred: {e}")
-    exit(1)
