@@ -14,6 +14,7 @@ client = OpenAI(api_key=API_KEY)
 authenticate_gmail()
 emails=check_email()
 try:
+    # each email is [message_id, thread_id, subject, sender, date, body]
     for email in emails:
         msg_id, thd_id, subject, sender, date, body = email
         if sender in RELATION:
@@ -30,9 +31,15 @@ try:
             )
         send_email(TO=sender, SUBJECT=f"Re: {subject}", BODY=response.output_text, MSG_ID=msg_id, THD_ID=thd_id)
         print("All emails sent successfully.")
-except:
+except TypeError:
+    # this just means emails=None
+    # this is fine, 
     print("No emails found.")
     exit(0)
+except Exception as e:
+    # something else went wrong
+    print(f"An error occurred: {e}")
+    exit(1)
 # print(emails)
 # for msg in emails:
 #     print(msg)
