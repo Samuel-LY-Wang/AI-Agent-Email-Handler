@@ -1,15 +1,20 @@
 from openai import OpenAI
 from dotenv import dotenv_values
 from relations import RELATION
-from auth.authenticate import *
 from scripts.check import *
 from scripts.get_msg_body import *
 from scripts.send import *
 
+#authentication is a bit harder due to separate directories
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from auth.authenticate import *
+
 # initialize Gmail API client
+authenticate_gmail()
 creds = Credentials.from_authorized_user_file('auth/token.json', SCOPES)
 service = build('gmail', 'v1', credentials=creds)
-authenticate_gmail()
 
 # initialize OpenAI API client
 env_vars=dotenv_values(".env")
@@ -30,18 +35,21 @@ try:
                 model="gpt-4.1-mini",
                 input=f"Draft an email responding to the email '{subject}' from {relation} ({sender}). The body of the email is: {body}"
             )
+
         else:
             relation = None
             response = client.responses.create(
                 model="gpt-4.1-mini",
                 input=f"Draft an email responding to the email '{subject}' from {sender}. The body of the email is: {body}"
             )
-        send_email(TO=sender, SUBJECT=f"Re: {subject}", BODY=response.output_text, MSG_ID=msg_id, THD_ID=thd_id)
+        #sends email with correct syntax
+        send_email(service=service, in_reply_to=sender, subject=f"Re: {subject}", body_text=response.output_text, thread_id=thd_id)
         print("All emails sent successfully.")
-except TypeError:
+except TypeError as t:
     # this just means emails=None
     # this is fine, 
     print("No emails found.")
+    print(f"Error: {t}")
     exit(0)
 except Exception as e:
     # something else went wrong
