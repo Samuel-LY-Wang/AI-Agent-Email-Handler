@@ -8,7 +8,7 @@ from datetime import datetime
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from lists import *
+from basicagent.config import *
 
 def accept_email(msg, mode=PREFERRED_MODE):
     '''
@@ -48,7 +48,7 @@ def check_email():
     # Build Gmail API service
     service = build('gmail', 'v1', credentials=creds)
 
-    # Call Gmail API to get the 10 most recent emails
+    # Call Gmail API to get the 10 most recent emails, only including Primary/Inbox emails today
     results = service.users().messages().list(userId='me', labelIds=['INBOX', 'CATEGORY_PERSONAL'], q=get_cur_time(), maxResults=10).execute()
     messages = results.get('messages', [])
     # print(messages)
