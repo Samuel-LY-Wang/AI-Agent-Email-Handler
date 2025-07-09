@@ -8,7 +8,7 @@ from datetime import datetime
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from basicagent.config import *
+from config import *
 
 def accept_email(msg, mode=PREFERRED_MODE):
     '''
@@ -37,13 +37,13 @@ def get_cur_time():
     query = f"after:{today}"
     return query
 
-def check_email():
+def check_email(user):
     '''
     Checks Gmail for all emails received today in Primary or Inbox\n
     Limit of 10 emails due to API restrictions.\n
     Returns each email as a list:\n
     [message id, thread id, subject, sender, date, body]'''
-    creds = Credentials.from_authorized_user_file('auth/token.json', SCOPES)
+    creds = Credentials.from_authorized_user_file(f'auth/tokens/token_{user}.json', SCOPES)
 
     # Build Gmail API service
     service = build('gmail', 'v1', credentials=creds)

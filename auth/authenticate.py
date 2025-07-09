@@ -24,7 +24,7 @@ def authenticate_gmail(uname):
             creds = flow.run_local_server(port=0)
             
         # Save credentials
-        with open(token_file, 'w') as token:
-            token.write(creds.to_json())
+    with open(token_file, 'w') as token:
+        token.write(creds.to_json())
 
     return build('gmail', 'v1', credentials=creds)

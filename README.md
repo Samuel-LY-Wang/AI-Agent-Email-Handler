@@ -11,10 +11,10 @@ Additionally, you should go into the config.py file and change anything you want
 # CURRENT STATUS:
 
 MVP: DONE\
+Blacklist/whitelist: DONE\
+Multiple user support: DONE\
 \
 NEXT STEPS:\
-Blacklist/whitelist: DONE\
 Running on cloud: WORKING ON IT\
-Multiple user support: WORKING ON IT\
 Attachment support: LATER\
 Other email providers: LATER

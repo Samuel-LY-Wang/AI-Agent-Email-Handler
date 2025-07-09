@@ -192,8 +192,8 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
-token.pkl
 **/.DS_Store
 token.json
 basicagent/credentials.json
 test.py
+auth/tokens/token_*.json

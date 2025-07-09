@@ -15,7 +15,7 @@ from auth.authenticate import *
 
 print("Remember to authenticate your account in the right order! Here is the order:")
 for i in range(len(LOGIN_USERS)):
-    print(f"{i}: {LOGIN_USERS[i]}")
+    print(f"{i+1}: {LOGIN_USERS[i]}")
 
 # initialize OpenAI API client
 env_vars=dotenv_values(".env")
@@ -37,7 +37,7 @@ for user in LOGIN_USERS:
     else:
         print(f"Authenticated {email_address} successfully.")
     # check email
-    emails=check_email()
+    emails=check_email(user)
 
     # draft replies and send them
     if emails:
