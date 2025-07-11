@@ -1,3 +1,7 @@
+'''
+This is the script that allows you to authenticate your gmail account.
+'''
+
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 

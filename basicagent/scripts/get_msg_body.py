@@ -1,3 +1,8 @@
+'''
+Scripts necessary to extract the body (text-only) from a Gmail message payload.\n
+Turns the base64-encoded response from Gmail API into a normal string.
+'''
+
 import base64
 
 def extract_text_from_parts(parts):

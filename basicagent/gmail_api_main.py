@@ -1,3 +1,7 @@
+'''
+Gmail API main script
+'''
+
 from openai import OpenAI
 from dotenv import dotenv_values
 from relations import RELATION
