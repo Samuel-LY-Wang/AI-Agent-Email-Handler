@@ -1,3 +1,7 @@
+'''
+All scripts necessary to send an email via gmail API
+'''
+
 import base64
 from email.message import EmailMessage
 

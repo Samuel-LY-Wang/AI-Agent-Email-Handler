@@ -1,3 +1,8 @@
+'''
+Deprecated script for checking emails with IMAP.\n
+Not useful for the current gmail-only scope, but the "check" script may be reused for a provider-agnostic handler.
+'''
+
 from openai import OpenAI
 import email
 from email.header import decode_header

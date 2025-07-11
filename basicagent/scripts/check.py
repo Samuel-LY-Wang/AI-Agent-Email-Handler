@@ -1,3 +1,7 @@
+'''
+All scripts necessary to check the email via gmail API
+'''
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
@@ -10,19 +14,22 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from config import *
 
-def accept_email(msg, mode=PREFERRED_MODE):
+def accept_email(cur_email, msg, mode=PREFERRED_MODE):
     '''
     Takes in an email and decides whether to accept or reject based on sender\n
     Has 2 different modes:\n
     Blacklist mode (default): accepts all emails except those from blacklisted senders\n
     Whitelist mode: only accepts emails from whitelisted senders'''
+    if (cur_email == msg[3]):
+        # never replies to your own emails
+        return False
     if (mode=='blacklist'):
         # if the sender is in the blacklist, return False
-        if msg[3] in BLACKLIST:
+        if msg[3] in BLACKLIST[cur_email]:
             return False
         # otherwise, return True
         return True
-    elif (mode=='whitelist'):
+    elif (mode=='whitelist'[cur_email]):
         # if the sender is in the whitelist, return True
         if msg[3] in WHITELIST:
             return True
@@ -70,7 +77,7 @@ def check_email(user):
             for attribute in email:
                 attribute = attribute.strip() if isinstance(attribute, str) else attribute
             #decide whether to reply based on the blacklist, whitelist, and preferred mode
-            if accept_email(email):
+            if accept_email(user, email):
                 emails.append([msg_id, thread_id, subject, sender, date, body])
             # Debug print statements, ignore
             # print(sender)
