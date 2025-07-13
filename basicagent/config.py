@@ -20,3 +20,6 @@ PREFERRED_MODE = 'blacklist' # CHANGE TO 'whitelist' TO USE WHITELIST
 LOGIN_USERS = ["samuellywang@gmail.com", "wamsang69@gmail.com", "samwang@umass.edu"] # users you wish to log in as, if you use multiple accounts
 # each account does have to be authenticated separately, but that's because of Google OAuth
 # credentials are the same for all accounts though
+
+AUTO_REFRESH = True # whether to automatically refresh the access token when it expires
+# set to False if you wish to re-authenticate manually
