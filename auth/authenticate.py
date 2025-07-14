@@ -54,7 +54,10 @@ def authenticate_gmail(uname):
         # token is valid, no need to re-authenticate
         return
     flow = InstalledAppFlow.from_client_secrets_file('basicagent/credentials.json', SCOPES)
-    creds = flow.run_local_server(port=0, access_type='offline', prompt='consent')
+    if AUTO_REFRESH:
+        creds = flow.run_local_server(port=0, access_type='offline', prompt='consent')
+    else:
+        creds = flow.run_local_server(port=0, access_type='online', prompt='consent')
     # print(creds_json["account"])
 
     if not creds or not creds.valid:
