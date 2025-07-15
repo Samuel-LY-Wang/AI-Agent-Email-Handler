@@ -2,14 +2,12 @@
 Gmail API main script
 '''
 
-from openai import OpenAI
-from dotenv import dotenv_values
-from relations import RELATION
-from scripts.check import *
-from scripts.get_msg_body import *
-from scripts.send import *
+from scripts.check_email import *
+from scripts.parse_msg import *
+from scripts.send_email import *
+from scripts.openai_utils import *
 from config import *
-import warnings
+import logging
 
 #authentication is a bit harder due to separate directories
 import sys
@@ -17,14 +15,10 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from auth.authenticate import *
 
-print("Remember to authenticate your account in the right order! Here is the order:")
-for i in range(len(LOGIN_USERS)):
-    print(f"{i+1}: {LOGIN_USERS[i]}")
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # initialize OpenAI API client
-env_vars=dotenv_values(".env")
-API_KEY=env_vars["OPEN_API_KEY"]
-client = OpenAI(api_key=API_KEY)
+client = init_openai_client()
 
 # initialize Gmail API client for each user
 for user in LOGIN_USERS:
@@ -37,9 +31,9 @@ for user in LOGIN_USERS:
     email_address = profile['emailAddress']
     #verify that authenticated email matches expected user
     if (email_address != user):
-        warnings.warn(f"WARNING: Authenticated email {email_address} does not match expected {user}", RuntimeWarning)
+        logging.info(f"WARNING: Authenticated email {email_address} does not match expected {user}")
     else:
-        print(f"Authenticated {email_address} successfully.")
+        logging.info(f"Authenticated {email_address} successfully.")
     # check email
     emails=check_email(user)
 
@@ -48,26 +42,15 @@ for user in LOGIN_USERS:
         # each email is [message_id, thread_id, subject, sender, date, body]
         for email in emails:
             msg_id, thd_id, subject, sender, date, body = email
-            if sender in RELATION:
-                relation = RELATION[sender]
-                response = client.responses.create(
-                    model="gpt-4.1-mini",
-                    input=f"Draft an email responding to the email '{subject}' from {relation} ({sender}). The body of the email is: {body}"
-                )
-
-            else:
-                relation = None
-                response = client.responses.create(
-                    model="gpt-4.1-mini",
-                    input=f"Draft an email responding to the email '{subject}' from {sender}. The body of the email is: {body}"
-                )
+            msg = draft_email(client, subject, sender, body, relation=RELATION.get(sender))
+            logging.info(f"Drafted email for {sender} with subject '{subject}'")
             #sends email with correct syntax
-            send_email(service=service, in_reply_to=sender, subject=f"Re: {subject}", body_text=response.output_text, thread_id=thd_id, message_id=msg_id)
-            print("All emails sent successfully.")
+            send_email(service=service, in_reply_to=sender, subject=f"Re: {subject}", body_text=msg, thread_id=thd_id, message_id=msg_id)
+        logging.info("All emails sent successfully.")
     else:
         # this just means emails=None
         # this is fine
-        print(f"No emails found for {email_address}.")
+        logging.info(f"No emails found for {email_address}.")
     service.close() # close service to avoid memory leak
 
 #close the OpenAI client

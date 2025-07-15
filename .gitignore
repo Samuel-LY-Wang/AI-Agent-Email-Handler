@@ -194,6 +194,6 @@ cython_debug/
 .cursorindexingignore
 **/.DS_Store
 token.json
-basicagent/credentials.json
 test.py
 auth/tokens/token_*.json
+auth/credentials.json
