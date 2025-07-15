@@ -23,3 +23,17 @@ LOGIN_USERS = ["samuellywang@gmail.com", "wamsang69@gmail.com", "samwang@umass.e
 
 AUTO_REFRESH = True # whether to automatically refresh the access token when it expires
 # set to False if you wish to re-authenticate manually
+
+SCOPES = ['https://www.googleapis.com/auth/gmail.modify'] # The scope of gmail API.
+# Set to modify, which allows both sending and reading.
+# Modifying emails is part of the scope, but is never called.
+
+RELATION = {
+    "xin.joy.wang@gmail.com": "My mother",
+    "kebinwang@gmail.com": "My father",
+    "hliu55@yahoo.com": "My former scoutmaster and mentor to my Eagle Project",
+    "wamsang69@gmail.com": "The account I use for auto-mailing"
+}
+# your relations with other users
+# used to help draft more personalized emails
+# so please change this for your own situation

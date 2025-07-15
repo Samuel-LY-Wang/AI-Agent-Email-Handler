@@ -6,7 +6,6 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from basicagent.scripts.SCOPE import SCOPES
 from google.auth.exceptions import RefreshError
 import os
 import sys
@@ -35,10 +34,7 @@ def is_valid_token(token, auto_refresh=AUTO_REFRESH):
             return True
         except RefreshError as e:
             print("Refresh token is no longer valid. Please re-authenticate.")
-        # Save the refreshed credentials back to the file
-        with open(token, 'w') as token_file:
-            token_file.write(creds.to_json())
-        return is_valid_token(token)
+            return False
     else:
         return False
 
@@ -53,7 +49,7 @@ def authenticate_gmail(uname):
     if is_valid_token(token_file):
         # token is valid, no need to re-authenticate
         return
-    flow = InstalledAppFlow.from_client_secrets_file('basicagent/credentials.json', SCOPES)
+    flow = InstalledAppFlow.from_client_secrets_file('auth/credentials.json', SCOPES)
     if AUTO_REFRESH:
         creds = flow.run_local_server(port=0, access_type='offline', prompt='consent')
     else:
