@@ -5,7 +5,7 @@ All scripts necessary to check the email via gmail API
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from basicagent.scripts.parse_msg import *
+from scripts.parse_msg import *
 from datetime import datetime
 
 import sys
