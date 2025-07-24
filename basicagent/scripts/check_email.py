@@ -43,16 +43,12 @@ def get_cur_time():
     query = f"after:{today}"
     return query
 
-def check_email(user):
+def check_email(user, service):
     '''
     Checks Gmail for all emails received today in Primary or Inbox\n
     Limit of 10 emails due to API restrictions.\n
     Returns each email as a list:\n
     [message id, thread id, subject, sender, date, body]'''
-    creds = Credentials.from_authorized_user_file(f'auth/tokens/token_{user}.json', SCOPES)
-
-    # Build Gmail API service
-    service = build('gmail', 'v1', credentials=creds)
 
     # Call Gmail API to get the 10 most recent emails, only including Primary/Inbox emails today
     results = service.users().messages().list(userId='me', labelIds=['INBOX', 'CATEGORY_PERSONAL'], q=get_cur_time(), maxResults=10).execute()

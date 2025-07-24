@@ -35,7 +35,7 @@ for user in LOGIN_USERS:
     else:
         logging.info(f"Authenticated {email_address} successfully.")
     # check email
-    emails=check_email(user)
+    emails=check_email(user, service)
 
     # draft replies and send them
     if emails:
