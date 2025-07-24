@@ -4,6 +4,8 @@ All scripts necessary to send an email via gmail API
 
 import base64
 from email.message import EmailMessage
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def create_reply_message(subject, in_reply_to, message_id, thread_id, body_text):
     '''
@@ -31,8 +33,8 @@ def send_email(service, subject, in_reply_to, message_id, thread_id, body_text):
     draft = create_reply_message(subject, in_reply_to, message_id, thread_id, body_text)
     try:
         response = service.users().drafts().create(userId='me', body=draft).execute()
-        print(f"Draft created with ID: {response['id']}")
+        logging.info(f"Draft created with ID: {response['id']}")
         return response
     except Exception as e:
-        print(f"An error occurred while saving the draft: {e}")
+        logging.info(f"An error occurred while saving the draft: {e}")
         return None

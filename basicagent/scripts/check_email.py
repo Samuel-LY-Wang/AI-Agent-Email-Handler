@@ -28,9 +28,9 @@ def accept_email(cur_email, msg, mode=PREFERRED_MODE):
             return False
         # otherwise, return True
         return True
-    elif (mode=='whitelist'[cur_email]):
+    elif (mode=='whitelist'):
         # if the sender is in the whitelist, return True
-        if msg[3] in WHITELIST:
+        if msg[3] in WHITELIST[cur_email]:
             return True
         # otherwise, return False
         return False
@@ -73,8 +73,7 @@ def check_email(user):
             body = get_message_body(msg_data)
             email=[msg_id, thread_id, subject, sender, date, body]
             #strips leading and trailing whitespace to make life easier.
-            for attribute in email:
-                attribute = attribute.strip() if isinstance(attribute, str) else attribute
+            email = [attribute.strip() if isinstance(attribute, str) else attribute for attribute in email]
             #decide whether to reply based on the blacklist, whitelist, and preferred mode
             if accept_email(user, email):
                 emails.append([msg_id, thread_id, subject, sender, date, body])
