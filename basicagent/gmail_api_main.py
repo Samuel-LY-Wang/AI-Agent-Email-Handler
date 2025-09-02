@@ -39,13 +39,11 @@ for user in LOGIN_USERS:
 
     # draft replies and send them
     if emails:
-        # each email is [message_id, thread_id, subject, sender, date, body]
         for email in emails:
-            msg_id, thd_id, subject, sender, date, body = email
-            msg = draft_email(client, subject, sender, body, relation=RELATION.get(sender))
-            logging.info(f"Drafted email for {sender} with subject '{subject}'")
+            msg = draft_email(client, email)
+            logging.info(f"Drafted email for {email.sender} with subject '{email.subject}'")
             #sends email with correct syntax
-            send_email(service=service, in_reply_to=sender, subject=f"Re: {subject}", body_text=msg, thread_id=thd_id, message_id=msg_id)
+            send_email(service, msg)
         logging.info("All emails sent successfully.")
     else:
         # this just means emails=None

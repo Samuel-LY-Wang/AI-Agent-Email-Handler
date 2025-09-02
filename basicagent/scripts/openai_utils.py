@@ -1,5 +1,11 @@
 from openai import OpenAI
 from dotenv import dotenv_values
+from scripts.email_class import Email
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from config import *
 
 def init_openai_client():
     """
@@ -12,25 +18,24 @@ def init_openai_client():
     
     return OpenAI(api_key=api_key)
 
-def draft_email(client, subject, sender, body, relation=None):
+def draft_email(client, email):
     """
     Draft an email response using OpenAI's API.
     
     :param client: OpenAI API client
-    :param subject: Subject of the email to respond to
-    :param sender: Sender of the email
-    :param body: Body of the email to respond to
-    :param relation: Relation to the sender (optional)
-    :return: Drafted email response text
+    :param email: An Email object containing all email data
+    :return: Drafted email as object
     """
+    relation=RELATION.get(email.sender, None)
     if relation:
-        prompt = f"Draft an email responding to the email '{subject}' from {relation} ({sender}). The body of the email is: {body}"
+        prompt = f"Draft an email responding to the email '{email.subject}' from {relation} ({email.sender}). The body of the email is: {email.body}"
     else:
-        prompt = f"Draft an email responding to the email '{subject}' from {sender}. The body of the email is: {body}"
+        prompt = f"Draft an email responding to the email '{email.subject}' from {email.sender}. The body of the email is: {email.body}"
     
     response = client.responses.create(
         model="gpt-4.1-mini",
         input=prompt
     )
+    new_email=email.create_new({"body": response.output_text, "subject": f"re: {email.subject}"})
     
-    return response.output_text
+    return new_email
