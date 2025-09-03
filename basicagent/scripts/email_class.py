@@ -2,7 +2,6 @@
 Just a class to model the important aspects of an email
 '''
 
-
 class Email():
     def __init__(self, msg_id, thd_id, subject, sender, date, body):
         self.msg_id=msg_id
