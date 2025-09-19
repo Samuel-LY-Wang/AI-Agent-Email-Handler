@@ -59,3 +59,13 @@ def mainloop(config):
     #close the OpenAI client
     #done last since one is used for all users
     client.close()
+
+if __name__=="__main__":
+    config={
+        "users": ["samuellywang@gmail.com"],
+        "mode": "blacklist",
+        "blacklist": {"samuellywang@gmail.com": []},
+        "whitelist": {"samuellywang@gmail.com": []},
+        "relation": {}
+    }
+    mainloop(config)

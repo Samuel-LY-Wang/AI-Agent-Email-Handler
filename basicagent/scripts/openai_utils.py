@@ -27,9 +27,9 @@ def draft_email(client, email, config):
     """
     relation=config["relation"].get(email.sender, None)
     if relation:
-        prompt = f"You are a model that is very good at writing professional emails. Draft an email responding to the email '{email.subject}' from {relation} ({email.sender}). The body of the email is: {email.body}. Please only include the body of the email."
+        prompt = f"You are a model that is very good at writing professional emails. Draft an email responding to the email '{email.subject}' from {relation} ({email.sender}). The body of the email is: {email.body}. Please do not include a subject line."
     else:
-        prompt = f"You are a model that is very good at writing professional emails. Draft an email responding to the email '{email.subject}' from {email.sender}. The body of the email is: {email.body}. Please only include the body of the email."
+        prompt = f"You are a model that is very good at writing professional emails. Draft an email responding to the email '{email.subject}' from {email.sender}. The body of the email is: {email.body}. Please do not include a subject line."
     
     response = client.responses.create(
         model="gpt-4.1-mini",
