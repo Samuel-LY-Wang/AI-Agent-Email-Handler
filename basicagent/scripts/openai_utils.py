@@ -27,14 +27,14 @@ def draft_email(client, email, config):
     """
     relation=config["relation"].get(email.sender, None)
     if relation:
-        prompt = f"Draft an email responding to the email '{email.subject}' from {relation} ({email.sender}). The body of the email is: {email.body}"
+        prompt = f"You are a model that is very good at writing professional emails. Draft an email responding to the email '{email.subject}' from {relation} ({email.sender}). The body of the email is: {email.body}. Please only include the body of the email."
     else:
-        prompt = f"Draft an email responding to the email '{email.subject}' from {email.sender}. The body of the email is: {email.body}"
+        prompt = f"You are a model that is very good at writing professional emails. Draft an email responding to the email '{email.subject}' from {email.sender}. The body of the email is: {email.body}. Please only include the body of the email."
     
     response = client.responses.create(
         model="gpt-4.1-mini",
         input=prompt
     )
-    new_email=email.create_new({"body": response.output_text, "subject": f"re: {email.subject}"})
+    new_email=email.create_new({"body": response.output_text, "subject": f"Re: {email.subject}"})
     
     return new_email

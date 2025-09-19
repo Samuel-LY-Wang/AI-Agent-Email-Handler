@@ -7,14 +7,14 @@ from email.message import EmailMessage
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def create_reply_message(subject, in_reply_to, message_id, thread_id, body_text):
+def create_reply_message(in_reply_to, message_id, thread_id, subject, body_text):
     '''
     creates a reply message in the required format for Gmail API.\n
     Returns a dictionary with the message body and metadata.'''
     message = EmailMessage()
     message.set_content(body_text)
     message['To'] = in_reply_to
-    message['Subject'] = subject if subject.startswith("Re:") else f"Re: {subject}"
+    message['Subject'] = subject
     message['In-Reply-To'] = message_id
     message['References'] = message_id
     message['From'] = "me"  # this tells the Gmail API to use the authenticated user
@@ -30,7 +30,7 @@ def create_reply_message(subject, in_reply_to, message_id, thread_id, body_text)
 def send_email(service, email, config):
     '''
     Sends a reply email to the specified recipient and saves it as a draft.'''
-    draft = create_reply_message(email.subject, email.sender, email.msg_id, email.thd_id, email.body)
+    draft = create_reply_message(email.sender, email.msg_id, email.thd_id, email.subject, email.body)
     try:
         response = service.users().drafts().create(userId='me', body=draft).execute()
         logging.info(f"Draft created with ID: {response['id']}")
