@@ -12,9 +12,8 @@ from scripts.email_class import Email
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from config import *
 
-def accept_email(cur_email, msg, mode=PREFERRED_MODE):
+def accept_email(cur_email, msg, config):
     '''
     Params:\n
     cur_email (the email that is in use right now)\n
@@ -23,6 +22,7 @@ def accept_email(cur_email, msg, mode=PREFERRED_MODE):
     Has 2 different modes:\n
     Blacklist mode (default): accepts all emails except those from blacklisted senders\n
     Whitelist mode: only accepts emails from whitelisted senders'''
+    mode=config["mode"]
     sender=msg[3].split(" ")[-1]
     sender.strip("<>") # remove <> tags gmail places sometimes
     if (cur_email == sender):
@@ -30,13 +30,13 @@ def accept_email(cur_email, msg, mode=PREFERRED_MODE):
         return False
     if (mode=='blacklist'):
         # if the sender is in the blacklist, return False
-        if sender in BLACKLIST.get(cur_email, []):
+        if sender in config["blacklist"].get(cur_email, []):
             return False
         # otherwise, return True
         return True
     elif (mode=='whitelist'):
         # if the sender is in the whitelist, return True
-        if sender in WHITELIST.get(cur_email, []):
+        if sender in config["whitelist"].get(cur_email, []):
             return True
         # otherwise, return False
         return False
@@ -49,7 +49,7 @@ def get_cur_time():
     query = f"after:{today}"
     return query
 
-def check_email(user, service):
+def check_email(user, service, config):
     '''
     Checks Gmail for all emails received today in Primary or Inbox\n
     Limit of 10 emails due to API restrictions.\n
@@ -78,7 +78,7 @@ def check_email(user, service):
             email = [attribute.strip() if isinstance(attribute, str) else attribute for attribute in email]
             # print(email)
             #decide whether to reply based on the blacklist, whitelist, and preferred mode
-            if accept_email(user, email):
+            if accept_email(user, email, config):
                 new_email=Email(msg_id=msg_id, thd_id=thread_id, subject=subject, sender=sender, date=date, body=body)
                 emails.append(new_email)
             # Debug print statements, ignore

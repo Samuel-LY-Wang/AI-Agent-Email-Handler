@@ -5,7 +5,6 @@ from scripts.email_class import Email
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from config import *
 
 def init_openai_client():
     """
@@ -18,7 +17,7 @@ def init_openai_client():
     
     return OpenAI(api_key=api_key)
 
-def draft_email(client, email):
+def draft_email(client, email, config):
     """
     Draft an email response using OpenAI's API.
     
@@ -26,7 +25,7 @@ def draft_email(client, email):
     :param email: An Email object containing all email data
     :return: Drafted email as object
     """
-    relation=RELATION.get(email.sender, None)
+    relation=config["relation"].get(email.sender, None)
     if relation:
         prompt = f"Draft an email responding to the email '{email.subject}' from {relation} ({email.sender}). The body of the email is: {email.body}"
     else:

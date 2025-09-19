@@ -13,8 +13,9 @@ Additionally, you should go into the config.py file and change anything you want
 MVP: DONE\
 Blacklist/whitelist: DONE\
 Multiple user support: DONE\
+Converted to an API: DONE\
 \
 NEXT STEPS:\
-Actual front-end and back-end: WORKING ON IT\
+Actual front-end: WORKING ON IT\
 Running on cloud: WORKING ON IT\
 Attachment support: LATER

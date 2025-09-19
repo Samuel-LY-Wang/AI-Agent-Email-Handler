@@ -8,11 +8,10 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.auth.exceptions import RefreshError
 import os
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from basicagent.config import *
 
-def is_valid_token(token, auto_refresh=AUTO_REFRESH):
+SCOPES=['https://www.googleapis.com/auth/gmail.modify']
+
+def is_valid_token(token):
     '''
     Checks if the token is valid by trying to build the gmail service with it.
     Returns True if the token is valid, False otherwise.
@@ -24,9 +23,7 @@ def is_valid_token(token, auto_refresh=AUTO_REFRESH):
     if creds and creds.valid:
         return True
     elif creds and creds.expired and creds.refresh_token:
-        if not auto_refresh:
-            return False
-        # auto-refresh on, so now we try to refresh token
+        # try to refresh token
         try:
             creds.refresh(Request())
             with open(token, 'w') as token_file:
@@ -50,10 +47,7 @@ def authenticate_gmail(uname):
         # token is valid, no need to re-authenticate
         return
     flow = InstalledAppFlow.from_client_secrets_file('auth/credentials.json', SCOPES)
-    if AUTO_REFRESH:
-        creds = flow.run_local_server(port=0, access_type='offline', prompt='consent')
-    else:
-        creds = flow.run_local_server(port=0, access_type='online', prompt='consent')
+    creds = flow.run_local_server(port=0, access_type='offline', prompt='consent')
     # print(creds_json["account"])
 
     if not creds or not creds.valid:

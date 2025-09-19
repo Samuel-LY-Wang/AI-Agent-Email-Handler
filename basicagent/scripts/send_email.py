@@ -27,7 +27,7 @@ def create_reply_message(subject, in_reply_to, message_id, thread_id, body_text)
         }
     }
 
-def send_email(service, email):
+def send_email(service, email, config):
     '''
     Sends a reply email to the specified recipient and saves it as a draft.'''
     draft = create_reply_message(email.subject, email.sender, email.msg_id, email.thd_id, email.body)

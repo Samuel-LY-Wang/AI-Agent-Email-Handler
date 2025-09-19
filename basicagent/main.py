@@ -1,56 +1,41 @@
-'''
-Gmail API main script
-'''
-
-from scripts.check_email import *
-from scripts.parse_msg import *
-from scripts.send_email import *
-from scripts.openai_utils import *
-from config import *
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+import uvicorn
 import logging
-
-#authentication is a bit harder due to separate directories
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from auth.authenticate import *
-
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# initialize OpenAI API client
-client = init_openai_client()
+from mainloop import mainloop
 
-# initialize Gmail API client for each user
-for user in LOGIN_USERS:
-    # authenticate user
-    authenticate_gmail(user)
-    #initialize Gmail API service
-    creds = Credentials.from_authorized_user_file(f'auth/tokens/token_{user}.json', SCOPES)
-    service = build('gmail', 'v1', credentials=creds)
-    profile = service.users().getProfile(userId='me').execute()
-    email_address = profile['emailAddress']
-    #verify that authenticated email matches expected user
-    if (email_address != user):
-        logging.info(f"WARNING: Authenticated email {email_address} does not match expected {user}")
-    else:
-        logging.info(f"Authenticated {email_address} successfully.")
-    # check email
-    emails=check_email(user, service)
+def has_all_expected_inputs(dict, inputs):
+    dict_keys=set(dict.keys())
+    for param in inputs:
+        if param not in dict_keys:
+            return False
+    return True
 
-    # draft replies and send them
-    if emails:
-        for email in emails:
-            msg = draft_email(client, email)
-            logging.info(f"Drafted email for {email.sender} with subject '{email.subject}'")
-            #sends email with correct syntax
-            send_email(service, msg)
-        logging.info("All emails sent successfully.")
-    else:
-        # this just means emails=None
-        # this is fine
-        logging.info(f"No emails found for {email_address}.")
-    service.close() # close service to avoid memory leak
+app = FastAPI()
 
-#close the OpenAI client
-#done last since one is used for all users
-client.close()
+@app.post("/run-agent")
+async def run_agent(request: Request):
+    expected_inputs=["users", "mode", "blacklist", "whitelist", "relation"]
+    try:
+        data = await request.json()
+        '''
+        Data should be of the form:
+        {
+            'users': [list of users]
+            'mode': either 'blacklist' or 'whitelist'
+            'blacklist': blacklisted accounts
+            'whitelist': whitelisted accounts
+            'relation': relations between the user and others
+        }
+        '''
+        if not has_all_expected_inputs(data, expected_inputs):
+            return JSONResponse(content={"status": "error", "message": "Not all values were included!"}, status_code=400)
+        result = mainloop(data)
+        return JSONResponse(content={"status": "success", "result": result})
+    except Exception as e:
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

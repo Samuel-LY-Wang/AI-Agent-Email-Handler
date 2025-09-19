@@ -21,13 +21,6 @@ LOGIN_USERS = ["samuellywang@gmail.com", "wamsang69@gmail.com", "samwang@umass.e
 # each account does have to be authenticated separately, but that's because of Google OAuth
 # credentials are the same for all accounts though
 
-AUTO_REFRESH = True # whether to automatically refresh the access token when it expires
-# set to False if you wish to re-authenticate manually
-
-SCOPES = ['https://www.googleapis.com/auth/gmail.modify'] # The scope of gmail API.
-# Set to modify, which allows both sending and reading.
-# Modifying emails is part of the scope, but is never called.
-
 RELATION = {
     "xin.joy.wang@gmail.com": "My mother",
     "kebinwang@gmail.com": "My father",
