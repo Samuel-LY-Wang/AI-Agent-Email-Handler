@@ -2,10 +2,10 @@
 Gmail API main script
 '''
 
+from dotenv import dotenv_values
 from scripts.check_email import *
 from scripts.parse_msg import *
 from scripts.send_email import *
-from scripts.openai_utils import *
 import logging
 
 #authentication is a bit harder due to separate directories
@@ -21,8 +21,19 @@ def mainloop(config):
     The main loop
     Takes in a JSON config from the API
     '''
-    # initialize OpenAI API client
-    client = init_openai_client()
+
+    env_vars = dotenv_values(".env")
+    backend = env_vars.get("BACKEND")
+
+    if backend == 'uwurandom':
+        from scripts.uwurandom import UwuRandom, draft_email_uwurandom
+        uwurandom = UwuRandom()
+    else:
+        from scripts.openai_utils import init_openai_client, draft_email
+
+        # initialize OpenAI API client
+        client = init_openai_client()
+
     LOGIN_USERS=config["users"]
 
     # initialize Gmail API client for each user
@@ -45,7 +56,10 @@ def mainloop(config):
         # draft replies and send them
         if emails:
             for email in emails:
-                msg = draft_email(client, email, config)
+                if backend == 'uwurandom':
+                    msg = draft_email_uwurandom(uwurandom, email)
+                else:
+                    msg = draft_email(client, email, config)
                 logging.info(f"Drafted email for {email.sender} with subject '{email.subject}'")
                 #sends email with correct syntax
                 send_email(service, msg, config)
@@ -56,9 +70,10 @@ def mainloop(config):
             logging.info(f"No emails found for {email_address}.")
         service.close() # close service to avoid memory leak
 
-    #close the OpenAI client
-    #done last since one is used for all users
-    client.close()
+    if client:
+        #close the OpenAI client
+        #done last since one is used for all users
+        client.close()
 
 if __name__=="__main__":
     config={
