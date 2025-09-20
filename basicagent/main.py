@@ -5,7 +5,7 @@ import uvicorn
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-from mainloop import mainloop
+from mainloop import draft_all_emails
 
 def has_all_expected_inputs(dict, inputs):
     dict_keys=set(dict.keys())
@@ -25,23 +25,27 @@ app.add_middleware(
 
 @app.post("/run-agent")
 async def run_agent(request: Request):
-    expected_inputs=["users", "mode", "blacklist", "whitelist", "relation"]
+    expected_inputs=["token", "mode", "blacklist", "whitelist", "relation"]
     try:
         data = await request.json()
         '''
         Data should be of the form:
         {
-            'users': [list of users]
-            'mode': either 'blacklist' or 'whitelist'
-            'blacklist': blacklisted accounts
-            'whitelist': whitelisted accounts
-            'relation': relations between the user and others
+            'user':
+            {
+                'token': (base64 encoded token),
+                'mode': ('blacklist' or 'whitelist'),
+                'blacklist': list of blacklisted accounts,
+                'whitelist': list of whitelisted accounts
+                'relation': relations
+            }, (a dict for each user)
         }
         '''
-        if not has_all_expected_inputs(data, expected_inputs):
-            return JSONResponse(content={"status": "error", "message": "Not all values were included!"}, status_code=400)
-        result = mainloop(data)
-        return JSONResponse(content={"status": "success", "result": result})
+        for user in data:
+            if not has_all_expected_inputs(data[user], expected_inputs):
+                return JSONResponse(content={"status": "error", "message": f"Not all values were included! User {user} was missing some fields"}, status_code=400)
+            draft_all_emails(user, data[user])
+        return JSONResponse(content={}, status_code=204)
     except Exception as e:
         return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
 
