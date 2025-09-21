@@ -19,33 +19,16 @@ import json
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-global SCOPES
-with open("auth/SCOPE.json", "r") as f:
-    SCOPES=json.load(f)["Scope"]
-
-def decode(b64_encoded_str):
-    decoded_data = base64.b64decode(b64_encoded_str)
-    decoded_str = decoded_data.decode('utf-8')
-    decoded_json=urllib.parse.unquote(decoded_str)
-    return json.loads(decoded_json)
-
 def draft_all_emails(user, user_info):
     '''
     The main loop
     Takes in a JSON config from the API
     Creates and drafts all emails
     '''
-    global SCOPES
     # initialize OpenAI API client
     client = init_openai_client()
     # decode token from config
-    token_b64 = user_info["token"]
-    if isinstance(token_b64, list):
-        token_b64 = token_b64[0]
-    token_json = decode(token_b64)
-    with open(f"auth/tokens/token_{user}.json", "w") as f:
-        json.dump(token_json, f)
-    creds = Credentials.from_authorized_user_file(f'auth/tokens/token_{user}.json', SCOPES)
+    creds = Credentials.from_authorized_user_file(f'auth/tokens/token_{user}.json')
     service = build('gmail', 'v1', credentials=creds)
     profile = service.users().getProfile(userId='me').execute()
     email_address = profile['emailAddress']
@@ -68,12 +51,13 @@ def draft_all_emails(user, user_info):
         logging.info(f"No emails found for {email_address}.")
     service.close() # close service to avoid memory leak
 
-if __name__=="__main__":
-    user_info={
-        "token": "[redacted]",
-        "mode": "blacklist",
-        "blacklist": [],
-        "whitelist": [],
-        "relation": {}
-    }
-    draft_all_emails("samuellywang@gmail.com", user_info)
+# just for the purpose of testing, ignore
+# if __name__=="__main__":
+#     user_info={
+#         "token": "[redacted]",
+#         "mode": "blacklist",
+#         "blacklist": [],
+#         "whitelist": [],
+#         "relation": {}
+#     }
+#     draft_all_emails("samuellywang@gmail.com", user_info)
