@@ -136,29 +136,37 @@ async def run_agent(request: Request):
             except ValueError as e:
                 # likely credential loading or validation issue raised from mainloop
                 err_text = str(e)
-                if "Failed to load credentials" in err_text:
+                logging.exception("Credential error for user %s: %s", user, err_text)
+                # Map common credential load problems to a safe, friendly error
+                if "Failed to load credentials" in err_text or "invalid_grant" in err_text or "invalid_grant" in err_text.lower():
                     err_key = "user_not_authenticated"
+                    friendly = "Authentication failed. Please re-authenticate via Sign in with Google."
                 else:
                     err_key = "credentials_load_failed"
-                logging.exception("Credential error for user %s", user)
-                results.append({"user": user, "status": "error", "error": err_key, "message": "A credential error occurred for this user."})
+                friendly = "Failed to load credentials for this user. Please re-authenticate."
+                # do not expose raw exception details to the frontend
+                results.append({"user": user, "status": "error", "error": err_key, "message": friendly})
             except HttpError as e:
                 # map common Gmail API http errors to safe keys
                 try:
                     status_code = int(e.resp.status)
                 except Exception:
                     status_code = None
-                logging.exception("Gmail API error for user %s", user)
+                logging.exception("Gmail API error for user %s: %s", user, str(e))
                 if status_code == 404:
                     err_key = "invalid_user_email"
+                    friendly = "The requested Gmail user was not found. Check the email/token used for this user."
                 elif status_code == 403:
                     err_key = "permission_denied"
+                    friendly = "Permission denied when accessing Gmail. The token may lack required scopes; try re-authenticating."
                 else:
                     err_key = "gmail_api_error"
-                results.append({"user": user, "status": "error", "error": err_key, "message": "An error occurred when contacting Gmail API."})
+                    friendly = "An error occurred while talking to the Gmail API. Check server logs for details."
+                results.append({"user": user, "status": "error", "error": err_key, "message": friendly})
             except Exception as e:
+                # Log the full traceback on the server, but return a simple message to the client
                 logging.exception("Unexpected error running agent for user %s", user)
-                results.append({"user": user, "status": "error", "error": "agent_failed", "message": "An internal error occurred while drafting emails."})
+                results.append({"user": user, "status": "error", "error": "agent_failed", "message": "The agent encountered an unexpected error while running. Check the server logs."})
         # overall response always 200 with per-user statuses so frontend can render friendly messages per user
         return JSONResponse(content={"status": "ok", "results": results}, status_code=200)
     except Exception as e:
