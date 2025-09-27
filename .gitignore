@@ -195,7 +195,8 @@ cython_debug/
 **/.DS_Store
 token.json
 test.py
-auth/tokens/token_*.json
-auth/credentials.json
+GPT_Mail_Back_End/auth/tokens/token_*.json
+GPT_Mail_Back_End/auth/credentials.json
 basicagent/imaplib_main.py
 app/test.js
+test.js
