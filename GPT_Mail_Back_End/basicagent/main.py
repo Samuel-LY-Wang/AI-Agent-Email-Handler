@@ -141,7 +141,7 @@ async def run_agent(request: Request):
                 else:
                     err_key = "credentials_load_failed"
                 logging.exception("Credential error for user %s", user)
-                results.append({"user": user, "status": "error", "error": err_key, "message": err_text})
+                results.append({"user": user, "status": "error", "error": err_key, "message": "A credential error occurred for this user."})
             except HttpError as e:
                 # map common Gmail API http errors to safe keys
                 try:
@@ -155,15 +155,15 @@ async def run_agent(request: Request):
                     err_key = "permission_denied"
                 else:
                     err_key = "gmail_api_error"
-                results.append({"user": user, "status": "error", "error": err_key, "message": str(e)})
+                results.append({"user": user, "status": "error", "error": err_key, "message": "An error occurred when contacting Gmail API."})
             except Exception as e:
                 logging.exception("Unexpected error running agent for user %s", user)
-                results.append({"user": user, "status": "error", "error": "agent_failed", "message": str(e)})
+                results.append({"user": user, "status": "error", "error": "agent_failed", "message": "An internal error occurred while drafting emails."})
         # overall response always 200 with per-user statuses so frontend can render friendly messages per user
         return JSONResponse(content={"status": "ok", "results": results}, status_code=200)
     except Exception as e:
         logging.exception("Failed to parse /run-agent request")
-        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=400)
+        return JSONResponse(content={"status": "error", "message": "Failed to parse request. Please check your input and try again."}, status_code=400)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
