@@ -1,3 +1,7 @@
+# IMPORTANT
+
+This project will not be continued. It will be left as a read-only archive, but I am currently working on the replacement to this.
+
 # AI-Agent-Email-Handler
 
 This is code that reads through your email and writes responses to those emails with AI. The responses are then placed in the drafts folder of your gmail account.
